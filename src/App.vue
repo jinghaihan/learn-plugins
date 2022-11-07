@@ -47,7 +47,22 @@ export default {
           //   segments: { radius: 1, width: 35, height: 35 },
           //   color: 0x00ff00
           // }
-        ]
+        ],
+        stats: true,
+        gui: {
+          name: 'jinghaihan',
+          folder: [
+            {
+              name: 'jing',
+              children: [
+                {
+                  name: 'haihan',
+                  method: () => { console.log('jinghaihan') }
+                }
+              ]
+            }
+          ]
+        }
       }
     }
   },
@@ -86,6 +101,16 @@ export default {
       this.chart.setOption(option)
       this.option.mesh[0].el = this.$refs.chart
       this.visible = true
+
+      setInterval(() => {
+        option.series[0].data = option.series[0].data.map(item => {
+          return {
+            name: item.name,
+            value: (Math.random() * 1000).toFixed(0)
+          }
+        })
+        this.chart.setOption(option)
+      }, 5000)
     }
   }
 }

@@ -11,9 +11,11 @@
   "dependencies": {
     "ant-design-vue": "1.7.8",
     "axios": "^0.27.2",
+    "dat.gui": "^0.7.9",
     "echarts": "^4.4.0",
     "jquery": "^3.6.1",
     "less": "^2.7.3",
+    "stats.js": "^0.17.0",
     "three": "^0.146.0",
     "vue": "^2.6.11"
   },

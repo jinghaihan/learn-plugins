@@ -1,4 +1,4 @@
-import $ from 'jquery'
+import $, { param } from 'jquery'
 import _ from 'lodash'
 import * as THREE from 'three'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader'
@@ -6,6 +6,9 @@ import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 // 导入模型解析器
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+// 性能监控/功能面板
+import * as Stats from 'stats.js'
+import * as Dat from 'dat.gui'
 
 class Base3D {
   constructor (container, option) {
@@ -23,6 +26,8 @@ class Base3D {
     this.clock = new THREE.Clock()
     this.raycaster = new THREE.Raycaster()
     this.mouse = new THREE.Vector2()
+    this.stats = null
+    this.gui = null
 
     this.init()
     this.animate()
@@ -39,8 +44,12 @@ class Base3D {
     this.initCamera()
     // 初始化渲染器
     this.initRenderer()
-    // 控制器
+    // 初始化控制器
     this.initControls()
+    // 初始化性能监控面板
+    this.initStats()
+    // 初始化Gui
+    this.initGui()
     // 添加物体
     this.addMesh()
   }
@@ -74,6 +83,7 @@ class Base3D {
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping
     this.renderer.toneMappingExposure = 3
     this.container.appendChild(this.renderer.domElement)
+    $(this.container).css({ 'position': 'relative' })
   }
   setHdrScene (hdr) {
     new RGBELoader().setPath('./files/hdr/').load(hdr + '.hdr', (texture) => {
@@ -92,6 +102,41 @@ class Base3D {
   }
   initControls () {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement)
+  }
+  initStats () {
+    if (!this.option.stats) return
+    this.stats = new Stats()
+    $(this.stats.domElement).css({ 
+      'position': 'absolute',
+      'top': '0px',
+      'left': '0px'
+    })
+    this.container.append(this.stats.domElement)
+  }
+  initGui () {
+    if (!this.option.gui) return
+    let option = this.option.gui
+
+    this.gui = new Dat.GUI({ name: option.name })
+    $(this.gui.domElement).css({ 
+      'position': 'absolute',
+      'right': '0px',
+      'top': '0px'
+    })
+    this.container.append(this.gui.domElement)
+
+    option.folder.forEach(item => {
+      let folder = this.gui.addFolder(item.name)
+      folder.open()
+      if (item.children && item.children.length) {
+        let params = {}
+        item.children.forEach(child => {
+          params[child.name] = child.method
+          let btn = folder.add(params, child.name)
+          btn.name(child.name)
+        })
+      }
+    })
   }
   async addMesh () {
     return new Promise((resolve, reject) => {
