@@ -60,18 +60,91 @@ class Base3D {
       case 'hdr':
         this.setHdrScene(this.option.scene.name)
         break
+      case 'cube-vr':
+        this.setCubeVrScene('cube', this.option.scene)
+        break
+      case 'sphere-vr':
+        this.setSphereVrScene('sphere', this.option.scene)
+        break
       default:
         break
     }
   }
+  setHdrScene (hdr) {
+    new RGBELoader().setPath('./files/hdr/').load(hdr + '.hdr', (texture) => {
+      texture.mapping = THREE.EquirectangularReflectionMapping
+      this.scene.background = texture
+      this.scene.environment = texture
+    })
+  }
+  setCubeVrScene (type, option) {
+    const textures = []
+    for (let i = 0; i < 6; i++) {
+      textures[i] = new THREE.Texture()
+    }
+    new THREE.ImageLoader()
+      .load('./files/texture/' + option.name, (image) => {
+        let canvas, context
+        const tileWidth = image.height
+        for (let i = 0; i < textures.length; i++) {
+          canvas = document.createElement('canvas')
+          context = canvas.getContext('2d')
+          canvas.height = tileWidth
+          canvas.width = tileWidth
+          context.drawImage(image, tileWidth * i, 0, tileWidth, tileWidth, 0, 0, tileWidth, tileWidth)
+          textures[i].image = canvas
+          textures[i].needsUpdate = true
+        }
+      })
+    const materials = []
+    for (let i = 0; i < 6; i++) {
+      materials.push(new THREE.MeshBasicMaterial({ map: textures[i] }))
+    }
+    const skyBox = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), materials)
+    skyBox.geometry.scale(1, 1, -1)
+    this.scene.add(skyBox)
+  }
+  setSphereVrScene (type, option) {
+    const geometry = new THREE.SphereGeometry(500, 60, 40)
+    geometry.scale(-1, 1, 1)
+    const texture = new THREE.TextureLoader().load('./files/texture/' + option.name)
+    const material = new THREE.MeshBasicMaterial({ map: texture })
+    const mesh = new THREE.Mesh(geometry, material)
+    this.scene.add(mesh)
+  }
   initCamera () {
-    this.camera = new THREE.PerspectiveCamera(
-      45,
-      this.container.offsetWidth / this.container.offsetHeight,
-      0.25,
-      200
-    )
-    this.camera.position.set(-1.8, 0.6, 2.7)
+    const scene = this.option.scene || {}
+    switch (scene.type) {
+      case 'hdr':
+        this.camera = new THREE.PerspectiveCamera(
+          45,
+          this.container.offsetWidth / this.container.offsetHeight,
+          0.25,
+          200
+        )
+        this.camera.position.set(-1.8, 0.6, 2.7)
+        break
+      case 'cube-vr':
+        this.camera = new THREE.PerspectiveCamera(
+          90,
+          this.container.offsetWidth / this.container.offsetHeight,
+          0.25,
+          200
+        )
+        this.camera.position.z = 0.01
+        break
+      case 'sphere-vr':
+        this.camera = new THREE.PerspectiveCamera(
+          75,
+          this.container.offsetWidth / this.container.offsetHeight,
+          1,
+          1100 
+        )
+        this.camera.position.z = 0.01
+        break
+      default:
+        break
+    }
   }
   initRenderer () {
     this.renderer = new THREE.WebGLRenderer({ antialias: true })
@@ -84,13 +157,6 @@ class Base3D {
     this.renderer.toneMappingExposure = 3
     this.container.appendChild(this.renderer.domElement)
     $(this.container).css({ 'position': 'relative' })
-  }
-  setHdrScene (hdr) {
-    new RGBELoader().setPath('./files/hdr/').load(hdr + '.hdr', (texture) => {
-      texture.mapping = THREE.EquirectangularReflectionMapping
-      this.scene.background = texture
-      this.scene.environment = texture
-    })
   }
   render () {
     var delta = this.clock.getDelta()

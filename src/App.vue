@@ -23,14 +23,16 @@ export default {
         scene: {
           // type: 'hdr',
           // name: '001'
+          type: 'sphere-vr',
+          name: 'sphere.jpg'
         },
         mesh: [
-          {
-            type: 'chart',
-            el: null,
-            chartSize: { x: 512, y: 512 },
-            size: { width: 1, height: 1 }
-          }
+          // {
+          //   type: 'chart',
+          //   el: null,
+          //   chartSize: { x: 512, y: 512 },
+          //   size: { width: 1, height: 1 }
+          // }
           // {
           //   type: 'glb',
           //   name: 'shoes'
@@ -47,70 +49,72 @@ export default {
           //   segments: { radius: 1, width: 35, height: 35 },
           //   color: 0x00ff00
           // }
-        ],
-        stats: true,
-        gui: {
-          name: 'jinghaihan',
-          folder: [
-            {
-              name: 'jing',
-              children: [
-                {
-                  name: 'haihan',
-                  method: () => { console.log('jinghaihan') }
-                }
-              ]
-            }
-          ]
-        }
+        ]
+        // stats: true,
+        // gui: {
+        //   name: 'jinghaihan',
+        //   folder: [
+        //     {
+        //       name: 'jing',
+        //       children: [
+        //         {
+        //           name: 'haihan',
+        //           method: () => { console.log('jinghaihan') }
+        //         }
+        //       ]
+        //     }
+        //   ]
+        // }
       }
     }
   },
   mounted () {
-    this.initChart()
+    this.init()
   },
   methods: {
-    initChart () {
-      let option = {
-        tooltip: {
-          trigger: 'item'
-        },
-        series: [
-          {
-            name: 'Access From',
-            type: 'pie',
-            radius: '50%',
-            data: [
-              { value: 1048, name: 'Search Engine' },
-              { value: 735, name: 'Direct' },
-              { value: 580, name: 'Email' },
-              { value: 484, name: 'Union Ads' },
-              { value: 300, name: 'Video Ads' }
-            ],
-            emphasis: {
-              itemStyle: {
-                shadowBlur: 10,
-                shadowOffsetX: 0,
-                shadowColor: 'rgba(0, 0, 0, 0.5)'
-              }
-            }
-          }
-        ]
-      }
-      this.chart = echarts.init(this.$refs.chart)
-      this.chart.setOption(option)
-      this.option.mesh[0].el = this.$refs.chart
-      this.visible = true
+    init () {
+      // let option = {
+      //   tooltip: {
+      //     trigger: 'item'
+      //   },
+      //   series: [
+      //     {
+      //       name: 'Access From',
+      //       type: 'pie',
+      //       radius: '50%',
+      //       data: [
+      //         { value: 1048, name: 'Search Engine' },
+      //         { value: 735, name: 'Direct' },
+      //         { value: 580, name: 'Email' },
+      //         { value: 484, name: 'Union Ads' },
+      //         { value: 300, name: 'Video Ads' }
+      //       ],
+      //       emphasis: {
+      //         itemStyle: {
+      //           shadowBlur: 10,
+      //           shadowOffsetX: 0,
+      //           shadowColor: 'rgba(0, 0, 0, 0.5)'
+      //         }
+      //       }
+      //     }
+      //   ]
+      // }
+      // this.chart = echarts.init(this.$refs.chart)
+      // this.chart.setOption(option)
+      // this.option.mesh[0].el = this.$refs.chart
+      // this.visible = true
 
-      setInterval(() => {
-        option.series[0].data = option.series[0].data.map(item => {
-          return {
-            name: item.name,
-            value: (Math.random() * 1000).toFixed(0)
-          }
-        })
-        this.chart.setOption(option)
-      }, 5000)
+      // setInterval(() => {
+      //   option.series[0].data = option.series[0].data.map(item => {
+      //     return {
+      //       name: item.name,
+      //       value: (Math.random() * 1000).toFixed(0)
+      //     }
+      //   })
+      //   this.chart.setOption(option)
+      // }, 5000)
+
+      this.visible = true
     }
   }
 }
